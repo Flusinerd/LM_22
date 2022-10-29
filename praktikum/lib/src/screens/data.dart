@@ -36,7 +36,7 @@ class _DataScreenState extends State<DataScreen> {
                 _getCurrentLocation();
               }),
         Text(
-            "LAT: ${_currentPosition.latitude}, LNG: ${_currentPosition.longitude}"),
+            "LAT: ${_currentPosition.latitude}, LNG: ${_currentPosition.longitude}, Accuracy: +/-${_currentPosition.accuracy}m"),
       ],
     )));
   }
