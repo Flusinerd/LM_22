@@ -34,7 +34,7 @@ class TabbarScreen extends StatelessWidget {
           case 1:
             return const SettingsScreen();
           case 2:
-            return const DataScreen();
+            return DataScreen();
           default:
             return const HomeScreen();
         }
