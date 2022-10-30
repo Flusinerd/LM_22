@@ -1,8 +1,9 @@
-import 'dart:ffi';
+import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:praktikum/src/sensor_data.dart';
+import 'package:http/http.dart' as http;
 
 class DataScreen extends StatefulWidget {
   @override
@@ -11,7 +12,7 @@ class DataScreen extends StatefulWidget {
 
 class _DataScreenState extends State<DataScreen> {
   //setting position to roughly paris as default to avoid errors
-  Position _currentPosition = new Position(
+  Position _currentPosition = Position(
       longitude: 48.856613,
       latitude: 2.352222,
       timestamp: DateTime.now(),
@@ -24,21 +25,21 @@ class _DataScreenState extends State<DataScreen> {
   //UI
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: Center(
-            child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        if (_currentPosition != null)
-          TextButton(
-              child: Text("Get location"),
-              onPressed: () {
-                _getCurrentLocation();
-              }),
-        Text(
-            "LAT: ${_currentPosition.latitude}, LNG: ${_currentPosition.longitude}, Accuracy: +/-${_currentPosition.accuracy}m"),
-      ],
-    )));
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          if (_currentPosition != null)
+            CupertinoButton(
+                child: const Text("Get location"),
+                onPressed: () {
+                  _getCurrentLocation();
+                }),
+          Text(
+              "LAT: ${_currentPosition.latitude}, LNG: ${_currentPosition.longitude}, Accuracy: +/-${_currentPosition.accuracy}m"),
+        ],
+      ),
+    );
   }
 
   _getCurrentLocation() async {
@@ -69,7 +70,19 @@ class _DataScreenState extends State<DataScreen> {
     _currentPosition = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
 
-    //checking value
-    print(_currentPosition);
+    // Create sensor_data object for lat and long
+    SensorData lat = SensorData(_currentPosition.latitude, DateTime.now(),
+        const SensorMetadata("latitude"));
+    SensorData lng = SensorData(_currentPosition.longitude, DateTime.now(),
+        const SensorMetadata("longitude"));
+
+    // Create array of sensor_data objects
+    List<SensorData> sensorData = [lat, lng];
+
+    // Create json string from sensor_data objects
+    String json = jsonEncode(sensorData);
+
+    // POST sensor_data to server as JSON
+    await http.post(Uri.parse("https://lm.jan-krueger.eu/data"), body: json);
   }
 }
