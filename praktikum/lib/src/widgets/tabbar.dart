@@ -7,6 +7,9 @@ import '../screens/charts.dart';
 import '../screens/list.dart';
 
 // CuppertinoTabbarWidget
+
+final GlobalKey<ListScreenState> globalKey = GlobalKey();
+
 class TabbarScreen extends StatelessWidget {
   const TabbarScreen({super.key});
 
@@ -42,13 +45,17 @@ class TabbarScreen extends StatelessWidget {
           case 0:
             return const HomeScreen();
           case 1:
-            return SettingsScreen();
+            return SettingsScreen(onDataSend: (String out) {
+              //print('Hallo aus dem tabbar');
+              //globalKey.currentState.initState();
+              globalKey.currentState!.updateData(out);
+            });
           case 2:
             return DataScreen();
           case 3:
             return ChartsScreen();
           case 4:
-            return ListScreen();
+            return ListScreen(key: globalKey);
           default:
             return const HomeScreen();
         }

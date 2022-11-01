@@ -1,17 +1,29 @@
 import 'package:flutter/material.dart';
 import '../model/sensor_setting.dart';
+import '../test_data/generator.dart';
 
 class SettingsScreen extends StatefulWidget {
-  _SettingsScreenState createState() => _SettingsScreenState();
+  final Function onDataSend;
+  SettingsScreen({required this.onDataSend});
+  _SettingsScreenState createState() =>
+      _SettingsScreenState(onDataSend: (String out) {
+        onDataSend(out);
+      });
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  final dataGenerators = [];
+
+  final Function(String) onDataSend;
+
   final showAll = SensorSetting(title: 'Show all Sensors');
   final sensors = [
     SensorSetting(title: 'Accelerometer'),
     SensorSetting(title: 'Gyroscope'),
     SensorSetting(title: 'GPS'),
   ];
+
+  _SettingsScreenState({required this.onDataSend});
 
   Widget buildCheckbox({
     required SensorSetting sensor,
@@ -83,13 +95,41 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ListView(
-        children: [
-          buildToggleCheckbox(showAll),
-          Divider(),
-          ...sensors.map(buildSingleCheckbox).toList(),
-        ],
+    return SafeArea(
+      child: Scaffold(
+        body: ListView(
+          children: [
+            buildToggleCheckbox(showAll),
+            Divider(),
+            ...sensors.map(buildSingleCheckbox).toList(),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            if (!(dataGenerators.length > 0)) {
+              setState(() {
+                sensors.forEach((sensor) {
+                  if (sensor.value) {
+                    SensorData test = new SensorData(
+                      name: sensor.title,
+                      delay: sensor.rate,
+                      onDataChanged: (String out) {
+                        onDataSend(out);
+                      },
+                    );
+                    dataGenerators.add(test);
+                  }
+                });
+              });
+            } else {
+              dataGenerators.forEach((dataGenerator) {
+                dataGenerator.isRunning = !dataGenerator.isRunning;
+              });
+              dataGenerators.clear();
+            }
+          },
+          child: const Icon(Icons.play_circle),
+        ),
       ),
     );
   }
