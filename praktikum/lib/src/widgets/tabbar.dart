@@ -3,6 +3,8 @@ import 'package:praktikum/src/screens/home.dart';
 
 import '../screens/data.dart';
 import '../screens/settings.dart';
+import '../screens/charts.dart';
+import '../screens/list.dart';
 
 // CuppertinoTabbarWidget
 class TabbarScreen extends StatelessWidget {
@@ -25,6 +27,14 @@ class TabbarScreen extends StatelessWidget {
             icon: Icon(CupertinoIcons.folder),
             label: 'Data',
           ),
+          BottomNavigationBarItem(
+            icon: Icon(CupertinoIcons.chart_bar_square),
+            label: 'Charts',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(CupertinoIcons.list_dash),
+            label: 'List',
+          ),
         ],
       ),
       tabBuilder: (BuildContext context, int index) {
@@ -32,9 +42,13 @@ class TabbarScreen extends StatelessWidget {
           case 0:
             return const HomeScreen();
           case 1:
-            return const SettingsScreen();
+            return SettingsScreen();
           case 2:
             return DataScreen();
+          case 3:
+            return ChartsScreen();
+          case 4:
+            return ListScreen();
           default:
             return const HomeScreen();
         }
