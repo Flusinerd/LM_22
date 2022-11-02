@@ -45,7 +45,7 @@ class ListScreenState extends State<ListScreen> {
   }
 
   void updateData(String out) {
-    print(out);
+    //print(out);
     final parsedData = jsonDecode(out);
     var tagObjsJson = (parsedData['values'] ?? []) as List;
     List<Tag> tagObjs =

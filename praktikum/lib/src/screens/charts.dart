@@ -117,13 +117,21 @@ class ChartsScreenState extends State<ChartsScreen> {
 }
 
 class Tag {
-  String name;
-  double value;
+  late String name;
+  late double value;
 
-  Tag(this.name, this.value);
+  Tag(name, value) {
+    this.name = name;
+    try {
+      this.value = double.parse(value);
+    } catch (FormatException) {
+      print(value);
+      this.value = 0.0;
+    }
+  }
 
   factory Tag.fromJson(dynamic json) {
-    return Tag(json['name'] as String, json['value'] as double);
+    return Tag(json['name'] as String, json['value'] as String);
   }
 
   @override
