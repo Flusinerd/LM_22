@@ -13,10 +13,10 @@ class ListScreen extends StatefulWidget {
 }
 
 class TestData {
-  TestData(this.sensor, this.time, this.value);
+  TestData(this.sensor, this.time, this.values);
   final String sensor;
   final DateTime time;
-  final double value;
+  final List<Tag> values;
 }
 
 class ListScreenState extends State<ListScreen> {
@@ -37,47 +37,46 @@ class ListScreenState extends State<ListScreen> {
                 child: ListTile(
                   title: Text(_chartData[index].sensor +
                       ': ' +
-                      _chartData[index].value.toString()),
+                      _chartData[index].values.toString()),
                   subtitle: Text('Time: ' + _chartData[index].time.toString()),
                 ),
               );
             }),
-        /*floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            setState(() {
-              _isRunning = !_isRunning;
-            });
-          },
-          child: const Icon(Icons.stop_circle),
-        ),*/
       ),
     );
   }
 
-  /* void _addItem(Timer timer) {
-    final DateTime now = DateTime.now();
-    setState(() {
-      if (_chartData.length < 7) {
-        _chartData.add(TestData(now, (math.Random().nextDouble() * 50)));
-      } else {
-        _chartData.add(TestData(now, (math.Random().nextDouble() * 50)));
-        _chartData.removeAt(0);
-      }
-    });
-  }*/
-
   void updateData(String out) {
     final parsedData = jsonDecode(out);
-    //print(parsedData['timestamp']);
+    var tagObjsJson = (parsedData['values'] ?? []) as List;
+    List<Tag> tagObjs =
+        tagObjsJson.map((tagJson) => Tag.fromJson(tagJson)).toList();
+    print(tagObjs);
     setState(() {
       if (_chartData.length < 7) {
         _chartData.add(TestData(parsedData['name'],
-            DateTime.parse(parsedData['timestamp']), parsedData['value']));
+            DateTime.parse(parsedData['timestamp']), tagObjs));
       } else {
         _chartData.add(TestData(parsedData['name'],
-            DateTime.parse(parsedData['timestamp']), parsedData['value']));
+            DateTime.parse(parsedData['timestamp']), tagObjs));
         _chartData.removeAt(0);
       }
     });
+  }
+}
+
+class Tag {
+  String name;
+  double value;
+
+  Tag(this.name, this.value);
+
+  factory Tag.fromJson(dynamic json) {
+    return Tag(json['name'] as String, json['value'] as double);
+  }
+
+  @override
+  String toString() {
+    return '{ ${this.name}, ${this.value} }';
   }
 }

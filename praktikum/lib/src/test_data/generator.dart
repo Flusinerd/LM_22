@@ -23,6 +23,6 @@ class SensorData {
   }
 
   String getData(Timer timer) {
-    return ('{"name": "${this.name}", "timestamp": "${DateTime.now()}", "value":${(math.Random().nextDouble() * 50)}}');
+    return ('{"name": "${this.name}", "timestamp": "${DateTime.now()}", "values":[{"name": "x", "value": ${(math.Random().nextDouble() * 50)}}, {"name": "y", "value": ${(math.Random().nextDouble() * 50)}}, {"name": "z", "value": ${(math.Random().nextDouble() * 50)}}]}');
   }
 }

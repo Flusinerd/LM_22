@@ -4,7 +4,9 @@ import 'dart:async';
 import 'dart:math' as math;
 
 class ChartsScreen extends StatefulWidget {
-  _ChartsScreenState createState() => _ChartsScreenState();
+  ChartsScreen({Key? key}) : super(key: key);
+
+  ChartsScreenState createState() => ChartsScreenState();
 }
 
 class TestData {
@@ -13,7 +15,7 @@ class TestData {
   final double value;
 }
 
-class _ChartsScreenState extends State<ChartsScreen> {
+class ChartsScreenState extends State<ChartsScreen> {
   bool _isRunning = true;
 
   void initState() {
