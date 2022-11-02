@@ -9,7 +9,7 @@ import '../screens/list.dart';
 // CuppertinoTabbarWidget
 
 final GlobalKey<ListScreenState> listKey = GlobalKey();
-final GlobalKey<ListScreenState> chartKey = GlobalKey();
+final GlobalKey<ChartsScreenState> chartKey = GlobalKey();
 
 class TabbarScreen extends StatelessWidget {
   const TabbarScreen({super.key});
@@ -50,6 +50,7 @@ class TabbarScreen extends StatelessWidget {
               //print(out);
               //globalKey.currentState.initState();
               listKey.currentState!.updateData(out);
+              chartKey.currentState!.updateData(out);
             });
           case 2:
             return DataScreen();

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'dart:async';
 import 'dart:math' as math;
+import 'dart:convert';
 
 class ChartsScreen extends StatefulWidget {
   ChartsScreen({Key? key}) : super(key: key);
@@ -10,89 +11,123 @@ class ChartsScreen extends StatefulWidget {
 }
 
 class TestData {
-  TestData(this.time, this.value);
+  TestData(this.time, this.values);
   final DateTime time;
-  final double value;
+  final List<Tag> values;
+}
+
+class Sensor {
+  Sensor(this.name, this.data, this.lines);
+  final String name;
+  final List<TestData> data;
+  final List<LineSeries> lines;
 }
 
 class ChartsScreenState extends State<ChartsScreen> {
-  bool _isRunning = true;
-
-  void initState() {
-    Timer.periodic(const Duration(seconds: 1), (Timer timer) {
-      if (!_isRunning) {
-        timer.cancel();
-      }
-      updateDataSource(timer);
-    });
-    super.initState();
-  }
-
   late ChartSeriesController _chartSeriesController;
 
-  List<TestData> _chartData = [];
-
-  /*List<TestData> _chartData2 = [
-    TestData(1, 28),
-    TestData(2, 30),
-    TestData(3, 15),
-    TestData(4, 9),
-    TestData(5, 18)
-  ];*/
+  List<Sensor> _sensors = [];
+  //List<TestData> _chartData = [];
+  //List<LineSeries> _lines = [];
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         body: SfCartesianChart(
-          title: ChartTitle(text: _isRunning.toString()),
+          title: ChartTitle(text: 'Chart'),
           legend: Legend(isVisible: true),
           series: <ChartSeries>[
-            LineSeries<TestData, DateTime>(
+            /*LineSeries<TestData, DateTime>(
                 name: 'Test Daten - Später der genaue Sensor',
                 onRendererCreated: (ChartSeriesController controller) {
                   _chartSeriesController = controller;
                 },
                 dataSource: _chartData,
                 xValueMapper: (TestData data, _) => data.time,
-                yValueMapper: (TestData data, _) => data.value,
-                dataLabelSettings: DataLabelSettings(isVisible: true)),
-            /*LineSeries<TestData, double>(
-                name: 'Test Daten - Ein zweiter Sensor',
-                dataSource: _chartData2,
-                xValueMapper: (TestData data, _) => data.time,
-                yValueMapper: (TestData data, _) => data.value,
-                dataLabelSettings: DataLabelSettings(isVisible: true))*/
+                yValueMapper: (TestData data, _) => data.values[0].value,
+                dataLabelSettings: DataLabelSettings(isVisible: true)),*/
+            ..._sensors[0].lines,
           ],
           primaryXAxis: DateTimeAxis(
               //minimum: DateTime.now(),
               edgeLabelPlacement: EdgeLabelPlacement.shift),
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            setState(() {
-              _isRunning = !_isRunning;
-            });
-          },
-          child: const Icon(Icons.stop_circle),
-        ),
       ),
     );
   }
 
-  double time = 0;
-  void updateDataSource(Timer timer) {
-    final DateTime now = DateTime.now();
-    if (_chartData.length < 30) {
-      _chartData.add(TestData(now, (math.Random().nextDouble() * 50)));
-      _chartSeriesController.updateDataSource(
-        addedDataIndex: _chartData.length - 1,
-      );
-    } else {
-      _chartData.add(TestData(now, (math.Random().nextDouble() * 50)));
-      _chartData.removeAt(0);
-      _chartSeriesController.updateDataSource(
-          addedDataIndex: _chartData.length - 1, removedDataIndex: 0);
-    }
+  void updateData(String out) {
+    final parsedData = jsonDecode(out);
+    // print(parsedData);
+    var tagObjsJson = (parsedData['values'] ?? []) as List;
+    List<Tag> tagObjs =
+        tagObjsJson.map((tagJson) => Tag.fromJson(tagJson)).toList();
+    //print(tagObjs);
+    setState(() {
+      int atIndex = -1;
+
+      for (int i = 0; i < _sensors.length; i++) {
+        if (_sensors[i].name == parsedData['name']) {
+          atIndex = i;
+          break;
+        }
+      }
+
+      if (atIndex == -1) {
+        _sensors.add(Sensor(parsedData['name'], [], []));
+        atIndex = _sensors.length - 1;
+        for (int i = 0; i < tagObjs.length; i++) {
+          _sensors[atIndex].lines.add(LineSeries<TestData, DateTime>(
+                name: _sensors[atIndex].name + ' ' + tagObjs[i].name,
+                onRendererCreated: (ChartSeriesController controller) {
+                  _chartSeriesController = controller;
+                },
+                dataSource: _sensors[atIndex].data,
+                xValueMapper: (TestData data, _) => data.time,
+                yValueMapper: (TestData data, _) => data.values[i].value,
+                //dataLabelSettings: DataLabelSettings(isVisible: true)),
+              ));
+        }
+      }
+
+      _sensors[atIndex]
+          .data
+          .add(TestData(DateTime.parse(parsedData['timestamp']), tagObjs));
+
+      /*_chartSeriesController.updateDataSource(
+        addedDataIndex: _sensors[atIndex].data.length - 1,
+      );*/
+
+      /*if (_chartData.length < 20) {
+        _chartData.add(TestData(parsedData['name'],
+            DateTime.parse(parsedData['timestamp']), tagObjs));
+        );        _chartSeriesController.updateDataSource(
+          addedDataIndex: _chartData.length - 1,
+        );
+      } else {
+        _chartData.add(TestData(parsedData['name'],
+            DateTime.parse(parsedData['timestamp']), tagObjs));
+        _chartData.removeAt(0);
+        _chartSeriesController.updateDataSource(
+            addedDataIndex: _chartData.length - 1, removedDataIndex: 0);
+      }*/
+    });
+  }
+}
+
+class Tag {
+  String name;
+  double value;
+
+  Tag(this.name, this.value);
+
+  factory Tag.fromJson(dynamic json) {
+    return Tag(json['name'] as String, json['value'] as double);
+  }
+
+  @override
+  String toString() {
+    return '{ ${this.name}, ${this.value} }';
   }
 }

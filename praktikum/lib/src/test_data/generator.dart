@@ -39,7 +39,7 @@ class SensorData {
 
   String getData(Timer timer) {
     gps();
-    return ('{"name": "${this.name}", "timestamp": "${DateTime.now()}", "value":$lat}');
+    return ('{"name": "${this.name}", "timestamp": "${DateTime.now()}", "values":[{"name": "x", "value": ${math.Random().nextDouble()}}, {"name": "y", "value": ${math.Random().nextDouble()}}]}');
   }
 
   void acceleration() {

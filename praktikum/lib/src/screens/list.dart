@@ -20,8 +20,6 @@ class TestData {
 }
 
 class ListScreenState extends State<ListScreen> {
-  bool _isRunning = true;
-
   List<TestData> _chartData = [];
 
   @override
@@ -51,7 +49,7 @@ class ListScreenState extends State<ListScreen> {
     var tagObjsJson = (parsedData['values'] ?? []) as List;
     List<Tag> tagObjs =
         tagObjsJson.map((tagJson) => Tag.fromJson(tagJson)).toList();
-    print(tagObjs);
+    //print(tagObjs);
     setState(() {
       if (_chartData.length < 7) {
         _chartData.add(TestData(parsedData['name'],
