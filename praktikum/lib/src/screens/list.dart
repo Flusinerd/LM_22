@@ -45,6 +45,7 @@ class ListScreenState extends State<ListScreen> {
   }
 
   void updateData(String out) {
+    print(out);
     final parsedData = jsonDecode(out);
     var tagObjsJson = (parsedData['values'] ?? []) as List;
     List<Tag> tagObjs =
@@ -65,12 +66,12 @@ class ListScreenState extends State<ListScreen> {
 
 class Tag {
   String name;
-  double value;
+  String value;
 
   Tag(this.name, this.value);
 
   factory Tag.fromJson(dynamic json) {
-    return Tag(json['name'] as String, json['value'] as double);
+    return Tag(json['name'] as String, json['value'] as String);
   }
 
   @override
