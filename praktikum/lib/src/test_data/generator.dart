@@ -12,20 +12,16 @@ class SensorData {
   double delay = 1;
   bool isRunning = true;
   final Function(String) onDataChanged;
+
+//accelerometer and gyroscope
   double x = 0.0;
   double y = 0.0;
   double z = 0.0;
-  //setting position to roughly paris as default to avoid errors
-  Position currentPosition = new Position(
-      longitude: 48.856613,
-      latitude: 2.352222,
-      timestamp: DateTime.now(),
-      accuracy: 0.0,
-      altitude: 0.0,
-      heading: 0.0,
-      speed: 0.0,
-      speedAccuracy: 0.0);
-  double test = 0.0;
+
+//position
+  double lat = 0.0;
+  double long = 0.0;
+  double accuracy = 0.0;
 
   SensorData({
     required this.name,
@@ -43,7 +39,7 @@ class SensorData {
 
   String getData(Timer timer) {
     gps();
-    return ('{"name": "${this.name}", "timestamp": "${DateTime.now()}", "value":$test}');
+    return ('{"name": "${this.name}", "timestamp": "${DateTime.now()}", "value":$lat}');
   }
 
   void acceleration() {
@@ -89,7 +85,6 @@ class SensorData {
     pos = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
 
-    currentPosition = pos;
-    test = pos.latitude;
+    lat = pos.latitude;
   }
 }
