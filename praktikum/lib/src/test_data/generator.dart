@@ -2,10 +2,8 @@ import 'dart:ffi';
 
 import 'package:meta/meta.dart';
 import 'dart:async';
-import 'dart:math' as math;
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:flutter/material.dart';
 
 class SensorData {
   String name;
@@ -38,8 +36,6 @@ class SensorData {
     switch (name) {
       case 'GPS':
         gps();
-        print("TEST");
-        print(values);
         result =
             '{"name": "${this.name}", "timestamp": "${DateTime.now()}", "values":$values}';
         break;
