@@ -46,6 +46,7 @@ class _DataScreenState extends State<DataScreen> {
     //check and request permissions, error prevention
     bool serviceEnabled;
     LocationPermission permission;
+    Position pos;
 
     //checking if value
     print(_currentPosition);
@@ -67,7 +68,8 @@ class _DataScreenState extends State<DataScreen> {
     }
 
     // once here, permissions are as needed, so locaction is set
-    _currentPosition = await Geolocator.getCurrentPosition(
+
+    pos = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
 
     // Create sensor_data object for lat and long
@@ -84,5 +86,11 @@ class _DataScreenState extends State<DataScreen> {
 
     // POST sensor_data to server as JSON
     await http.post(Uri.parse("https://lm.jan-krueger.eu/data"), body: json);
+    setState(() {
+      _currentPosition = pos;
+    });
+
+    //checking value
+    print(_currentPosition);
   }
 }

@@ -39,6 +39,9 @@ dependencies:
   connectivity_plus: ^2.3.7
   network_info_plus: ^2.2.0
   wifi_info_plugin: ^1.1.5
+  sensors_plus: ^2.0.1
+  geolocator: ^9.0.2
+  ffi: ^2.0.1
 
 dev_dependencies:
   flutter_test:
