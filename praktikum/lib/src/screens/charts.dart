@@ -17,10 +17,10 @@ class TestData {
 }
 
 class Sensor {
-  Sensor(this.name, this.data, this.lines);
+  Sensor(this.name, this.data, /*this.lines*/);
   final String name;
   final List<TestData> data;
-  final List<LineSeries> lines;
+  //final List<LineSeries> lines;
 }
 
 class ChartsScreenState extends State<ChartsScreen> {
@@ -28,7 +28,7 @@ class ChartsScreenState extends State<ChartsScreen> {
 
   List<Sensor> _sensors = [];
   //List<TestData> _chartData = [];
-  //List<LineSeries> _lines = [];
+  List<LineSeries> _lines = [];
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +47,7 @@ class ChartsScreenState extends State<ChartsScreen> {
                 xValueMapper: (TestData data, _) => data.time,
                 yValueMapper: (TestData data, _) => data.values[0].value,
                 dataLabelSettings: DataLabelSettings(isVisible: true)),*/
-            ..._sensors[0].lines,
+            ..._lines,
           ],
           primaryXAxis: DateTimeAxis(
               //minimum: DateTime.now(),
@@ -75,10 +75,10 @@ class ChartsScreenState extends State<ChartsScreen> {
       }
 
       if (atIndex == -1) {
-        _sensors.add(Sensor(parsedData['name'], [], []));
+        _sensors.add(Sensor(parsedData['name'], []));
         atIndex = _sensors.length - 1;
         for (int i = 0; i < tagObjs.length; i++) {
-          _sensors[atIndex].lines.add(LineSeries<TestData, DateTime>(
+          _lines.add(LineSeries<TestData, DateTime>(
                 name: _sensors[atIndex].name + ' ' + tagObjs[i].name,
                 onRendererCreated: (ChartSeriesController controller) {
                   _chartSeriesController = controller;
