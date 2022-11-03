@@ -76,6 +76,6 @@ class Tag {
 
   @override
   String toString() {
-    return '{ ${this.name}, ${this.value} }';
+    return ' ${this.name}: ${this.value} ';
   }
 }

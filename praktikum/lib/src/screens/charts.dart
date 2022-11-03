@@ -17,7 +17,11 @@ class TestData {
 }
 
 class Sensor {
-  Sensor(this.name, this.data, /*this.lines*/);
+  Sensor(
+    this.name,
+    this.data,
+    /*this.lines*/
+  );
   final String name;
   final List<TestData> data;
   //final List<LineSeries> lines;
@@ -53,6 +57,15 @@ class ChartsScreenState extends State<ChartsScreen> {
               //minimum: DateTime.now(),
               edgeLabelPlacement: EdgeLabelPlacement.shift),
         ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            setState(() {
+              _sensors.clear();
+              _lines.clear();
+            });
+          },
+          child: const Icon(Icons.remove_circle),
+        ),
       ),
     );
   }
@@ -79,39 +92,21 @@ class ChartsScreenState extends State<ChartsScreen> {
         atIndex = _sensors.length - 1;
         for (int i = 0; i < tagObjs.length; i++) {
           _lines.add(LineSeries<TestData, DateTime>(
-                name: _sensors[atIndex].name + ' ' + tagObjs[i].name,
-                onRendererCreated: (ChartSeriesController controller) {
-                  _chartSeriesController = controller;
-                },
-                dataSource: _sensors[atIndex].data,
-                xValueMapper: (TestData data, _) => data.time,
-                yValueMapper: (TestData data, _) => data.values[i].value,
-                //dataLabelSettings: DataLabelSettings(isVisible: true)),
-              ));
+            name: _sensors[atIndex].name + ' ' + tagObjs[i].name,
+            onRendererCreated: (ChartSeriesController controller) {
+              _chartSeriesController = controller;
+            },
+            dataSource: _sensors[atIndex].data,
+            xValueMapper: (TestData data, _) => data.time,
+            yValueMapper: (TestData data, _) => data.values[i].value,
+            //dataLabelSettings: DataLabelSettings(isVisible: true)),
+          ));
         }
       }
 
       _sensors[atIndex]
           .data
           .add(TestData(DateTime.parse(parsedData['timestamp']), tagObjs));
-
-      /*_chartSeriesController.updateDataSource(
-        addedDataIndex: _sensors[atIndex].data.length - 1,
-      );*/
-
-      /*if (_chartData.length < 20) {
-        _chartData.add(TestData(parsedData['name'],
-            DateTime.parse(parsedData['timestamp']), tagObjs));
-        );        _chartSeriesController.updateDataSource(
-          addedDataIndex: _chartData.length - 1,
-        );
-      } else {
-        _chartData.add(TestData(parsedData['name'],
-            DateTime.parse(parsedData['timestamp']), tagObjs));
-        _chartData.removeAt(0);
-        _chartSeriesController.updateDataSource(
-            addedDataIndex: _chartData.length - 1, removedDataIndex: 0);
-      }*/
     });
   }
 }

@@ -13,6 +13,7 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   final dataGenerators = [];
+  var icon = Icon(Icons.play_circle);
 
   final Function(String) onDataSend;
 
@@ -21,6 +22,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     SensorSetting(title: 'Accelerometer'),
     SensorSetting(title: 'Gyroscope'),
     SensorSetting(title: 'GPS'),
+    SensorSetting(title: 'Random Numbers'),
   ];
 
   _SettingsScreenState({required this.onDataSend});
@@ -118,6 +120,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       },
                     );
                     dataGenerators.add(test);
+                    icon = Icon(Icons.pause_circle);
                   }
                 });
               });
@@ -126,9 +129,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 dataGenerator.isRunning = !dataGenerator.isRunning;
               });
               dataGenerators.clear();
+              setState(() {
+                icon = Icon(Icons.play_circle);
+              });
             }
           },
-          child: const Icon(Icons.play_circle),
+          child: icon,
         ),
       ),
     );
