@@ -47,8 +47,6 @@ class TabbarScreen extends StatelessWidget {
             return const HomeScreen();
           case 1:
             return SettingsScreen(onDataSend: (String out) {
-              //print(out);
-              //globalKey.currentState.initState();
               listKey.currentState!.updateData(out);
               chartKey.currentState!.updateData(out);
             });

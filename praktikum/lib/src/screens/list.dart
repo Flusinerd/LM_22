@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
-
-import 'dart:async';
-import 'dart:math' as math;
 import 'dart:convert';
 
-import '../test_data/generator.dart';
-
 class ListScreen extends StatefulWidget {
-  ListScreen({Key? key}) : super(key: key);
+  const ListScreen({Key? key}) : super(key: key);
 
+  @override
   ListScreenState createState() => ListScreenState();
 }
 
@@ -20,7 +16,7 @@ class TestData {
 }
 
 class ListScreenState extends State<ListScreen> {
-  List<TestData> _chartData = [];
+  final List<TestData> _chartData = [];
 
   @override
   Widget build(BuildContext context) {
@@ -33,10 +29,9 @@ class ListScreenState extends State<ListScreen> {
                 margin: const EdgeInsets.all(5),
                 elevation: 5,
                 child: ListTile(
-                  title: Text(_chartData[index].sensor +
-                      ': ' +
-                      _chartData[index].values.toString()),
-                  subtitle: Text('Time: ' + _chartData[index].time.toString()),
+                  title: Text(
+                      '${_chartData[index].sensor}: ${_chartData[index].values}'),
+                  subtitle: Text('Time: ${_chartData[index].time}'),
                 ),
               );
             }),
@@ -76,6 +71,7 @@ class Tag {
 
   @override
   String toString() {
-    return ' ${this.name}: ${this.value} ';
+    // ignore: unnecessary_brace_in_string_interps
+    return ' $name: $value ';
   }
 }

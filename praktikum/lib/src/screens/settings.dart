@@ -4,7 +4,8 @@ import '../test_data/generator.dart';
 
 class SettingsScreen extends StatefulWidget {
   final Function onDataSend;
-  SettingsScreen({required this.onDataSend});
+  const SettingsScreen({super.key, required this.onDataSend});
+  @override
   _SettingsScreenState createState() =>
       _SettingsScreenState(onDataSend: (String out) {
         onDataSend(out);
@@ -13,7 +14,7 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   final dataGenerators = [];
-  var icon = Icon(Icons.play_circle);
+  var icon = const Icon(Icons.play_circle);
 
   final Function(String) onDataSend;
 
@@ -88,9 +89,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           final newValue = !sensor.value;
           setState(() {
             showAll.value = newValue;
-            sensors.forEach((sensor) {
+            for (var sensor in sensors) {
               sensor.value = newValue;
-            });
+            }
           });
         },
       );
@@ -102,17 +103,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
         body: ListView(
           children: [
             buildToggleCheckbox(showAll),
-            Divider(),
+            const Divider(),
             ...sensors.map(buildSingleCheckbox).toList(),
           ],
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            if (!(dataGenerators.length > 0)) {
+            if (!(dataGenerators.isNotEmpty)) {
               setState(() {
-                sensors.forEach((sensor) {
+                for (var sensor in sensors) {
                   if (sensor.value) {
-                    SensorData test = new SensorData(
+                    SensorData test = SensorData(
                       name: sensor.title,
                       delay: sensor.rate,
                       onDataChanged: (String out) {
@@ -120,17 +121,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       },
                     );
                     dataGenerators.add(test);
-                    icon = Icon(Icons.pause_circle);
+                    icon = const Icon(Icons.pause_circle);
                   }
-                });
+                }
               });
             } else {
-              dataGenerators.forEach((dataGenerator) {
+              for (var dataGenerator in dataGenerators) {
                 dataGenerator.isRunning = !dataGenerator.isRunning;
-              });
+              }
               dataGenerators.clear();
               setState(() {
-                icon = Icon(Icons.play_circle);
+                icon = const Icon(Icons.play_circle);
               });
             }
           },

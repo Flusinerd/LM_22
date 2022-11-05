@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'dart:async';
-import 'dart:math' as math;
 import 'dart:convert';
 
 class ChartsScreen extends StatefulWidget {
-  ChartsScreen({Key? key}) : super(key: key);
+  const ChartsScreen({Key? key}) : super(key: key);
 
+  @override
   ChartsScreenState createState() => ChartsScreenState();
 }
 
@@ -30,9 +29,9 @@ class Sensor {
 class ChartsScreenState extends State<ChartsScreen> {
   late ChartSeriesController _chartSeriesController;
 
-  List<Sensor> _sensors = [];
+  final List<Sensor> _sensors = [];
   //List<TestData> _chartData = [];
-  List<LineSeries> _lines = [];
+  final List<LineSeries> _lines = [];
 
   @override
   Widget build(BuildContext context) {
@@ -92,7 +91,7 @@ class ChartsScreenState extends State<ChartsScreen> {
         atIndex = _sensors.length - 1;
         for (int i = 0; i < tagObjs.length; i++) {
           _lines.add(LineSeries<TestData, DateTime>(
-            name: _sensors[atIndex].name + ' ' + tagObjs[i].name,
+            name: '${_sensors[atIndex].name} ${tagObjs[i].name}',
             onRendererCreated: (ChartSeriesController controller) {
               _chartSeriesController = controller;
             },
@@ -115,12 +114,11 @@ class Tag {
   late String name;
   late double value;
 
-  Tag(name, value) {
-    this.name = name;
+  Tag(this.name, value) {
     try {
       this.value = double.parse(value);
-    } catch (FormatException) {
-      print(value);
+    } catch (e) {
+      //print(value);
       this.value = 0.0;
     }
   }
@@ -131,6 +129,6 @@ class Tag {
 
   @override
   String toString() {
-    return '{ ${this.name}, ${this.value} }';
+    return '{ $name, $value }';
   }
 }
