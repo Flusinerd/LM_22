@@ -22,7 +22,7 @@ class SensorData {
     required this.delay,
     required this.onDataChanged,
   }) {
-    Timer.periodic(Duration(milliseconds: (this.delay * 1000).toInt()),
+    Timer.periodic(Duration(milliseconds: (delay * 1000).toInt()),
         (Timer timer) {
       if (!isRunning) {
         timer.cancel();
@@ -37,17 +37,17 @@ class SensorData {
       case 'GPS':
         gps();
         result =
-            '{"name": "${this.name}", "timestamp": "${DateTime.now()}", "values":$values}';
+            '{"name": "$name", "timestamp": "${DateTime.now()}", "values":$values}';
         break;
       case 'Gyroscope':
         gyroscoping();
         result =
-            '{"name": "${this.name}", "timestamp": "${DateTime.now()}", "values":$values}';
+            '{"name": "$name", "timestamp": "${DateTime.now()}", "values":$values}';
         break;
       case 'Accelerometer':
         acceleration();
         result =
-            '{"name": "${this.name}", "timestamp": "${DateTime.now()}", "values":$values}';
+            '{"name": "$name", "timestamp": "${DateTime.now()}", "values":$values}';
         break;
       default:
         result = "Fehler";

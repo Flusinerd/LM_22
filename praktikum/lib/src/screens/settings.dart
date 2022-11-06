@@ -6,13 +6,13 @@ class SettingsScreen extends StatefulWidget {
   final Function onDataSend;
   const SettingsScreen({super.key, required this.onDataSend});
   @override
-  _SettingsScreenState createState() =>
-      _SettingsScreenState(onDataSend: (String out) {
+  SettingsScreenState createState() =>
+      SettingsScreenState(onDataSend: (String out) {
         onDataSend(out);
       });
 }
 
-class _SettingsScreenState extends State<SettingsScreen> {
+class SettingsScreenState extends State<SettingsScreen> {
   final dataGenerators = [];
   var icon = const Icon(Icons.play_circle);
 
@@ -26,7 +26,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     SensorSetting(title: 'Random Numbers'),
   ];
 
-  _SettingsScreenState({required this.onDataSend});
+  SettingsScreenState({required this.onDataSend});
 
   Widget buildCheckbox({
     required SensorSetting sensor,
@@ -43,7 +43,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             value: sensor.rate,
             min: 0,
             max: 5,
-            divisions: 10,
+            divisions: 100,
             onChanged: (value) {
               setState(() {
                 sensor.rate = value;
