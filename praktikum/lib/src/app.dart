@@ -40,6 +40,6 @@ class DatenkrakeAppState extends State<DatenkrakeApp>
         theme: CupertinoThemeData(
           brightness: brightness,
         ),
-        home: const TabbarScreen());
+        home: TabbarScreen());
   }
 }

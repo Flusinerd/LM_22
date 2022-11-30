@@ -1,7 +1,7 @@
 import 'dart:ffi';
 
-import 'package:meta/meta.dart';
 import 'dart:async';
+import 'dart:math' as math;
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -22,7 +22,7 @@ class SensorData {
     required this.delay,
     required this.onDataChanged,
   }) {
-    Timer.periodic(Duration(milliseconds: (this.delay * 1000).toInt()),
+    Timer.periodic(Duration(milliseconds: (delay * 1000).toInt()),
         (Timer timer) {
       if (!isRunning) {
         timer.cancel();
@@ -37,17 +37,22 @@ class SensorData {
       case 'GPS':
         gps();
         result =
-            '{"name": "${this.name}", "timestamp": "${DateTime.now()}", "values":$values}';
+            '{"name": "$name", "timestamp": "${DateTime.now()}", "values":$values}';
         break;
       case 'Gyroscope':
         gyroscoping();
         result =
-            '{"name": "${this.name}", "timestamp": "${DateTime.now()}", "values":$values}';
+            '{"name": "$name", "timestamp": "${DateTime.now()}", "values":$values}';
         break;
       case 'Accelerometer':
         acceleration();
         result =
-            '{"name": "${this.name}", "timestamp": "${DateTime.now()}", "values":$values}';
+            '{"name": "$name", "timestamp": "${DateTime.now()}", "values":$values}';
+        break;
+      case 'Random Numbers':
+        randomNumbers();
+        result =
+            '{"name": "$name", "timestamp": "${DateTime.now()}", "values":$values}';
         break;
       default:
         result = "Fehler";
@@ -56,11 +61,26 @@ class SensorData {
     return result;
   }
 
+  void randomNumbers() {
+    values[0] = {
+      '"name"': '"x"',
+      '"value"': '"${math.Random().nextDouble().toString()}"'
+    };
+    values[1] = {
+      '"name"': '"y"',
+      '"value"': '"${math.Random().nextDouble().toString()}"'
+    };
+    values[2] = {
+      '"name"': '"z"',
+      '"value"': '"${math.Random().nextDouble().toString()}"'
+    };
+  }
+
   void acceleration() {
     userAccelerometerEvents.listen((UserAccelerometerEvent event) {
       values[0] = {'"name"': '"x"', '"value"': '"${event.x.toString()}"'};
       values[1] = {'"name"': '"y"', '"value"': '"${event.y.toString()}"'};
-      values[2] = {'"name"': '"x"', '"value"': '"${event.z.toString()}"'};
+      values[2] = {'"name"': '"z"', '"value"': '"${event.z.toString()}"'};
     });
   }
 
@@ -68,7 +88,7 @@ class SensorData {
     gyroscopeEvents.listen((event) {
       values[0] = {'"name"': '"x"', '"value"': '"${event.x.toString()}"'};
       values[1] = {'"name"': '"y"', '"value"': '"${event.y.toString()}"'};
-      values[2] = {'"name"': '"x"', '"value"': '"${event.z.toString()}"'};
+      values[2] = {'"name"': '"z"', '"value"': '"${event.z.toString()}"'};
     });
   }
 

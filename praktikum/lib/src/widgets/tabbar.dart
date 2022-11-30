@@ -1,10 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:praktikum/src/screens/home.dart';
 
-import '../screens/data.dart';
+//import '../screens/data.dart';
 import '../screens/settings.dart';
 import '../screens/charts.dart';
 import '../screens/list.dart';
+import '../screens/map.dart';
 
 // CuppertinoTabbarWidget
 
@@ -12,6 +13,8 @@ final GlobalKey<ListScreenState> listKey = GlobalKey();
 final GlobalKey<ChartsScreenState> chartKey = GlobalKey();
 
 class TabbarScreen extends StatelessWidget {
+  /*ListScreen listScreen = ListScreen(key: listKey);
+  ChartsScreen chartsScreen = ChartsScreen(key: chartKey);*/
   const TabbarScreen({super.key});
 
   @override
@@ -27,10 +30,10 @@ class TabbarScreen extends StatelessWidget {
             icon: Icon(CupertinoIcons.settings),
             label: 'Settings',
           ),
-          BottomNavigationBarItem(
+          /*BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.folder),
             label: 'Data',
-          ),
+          ),*/
           BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.chart_bar_square),
             label: 'Charts',
@@ -38,6 +41,10 @@ class TabbarScreen extends StatelessWidget {
           BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.list_dash),
             label: 'List',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(CupertinoIcons.map),
+            label: 'Map',
           ),
         ],
       ),
@@ -50,12 +57,16 @@ class TabbarScreen extends StatelessWidget {
               listKey.currentState!.updateData(out);
               chartKey.currentState!.updateData(out);
             });
+          /*case 2:
+            return DataScreen();*/
           case 2:
-            return DataScreen();
-          case 3:
             return ChartsScreen(key: chartKey);
-          case 4:
+          //return chartsScreen;
+          case 3:
             return ListScreen(key: listKey);
+          //return listScreen;
+          case 4:
+            return MapScreen();
           default:
             return const HomeScreen();
         }
