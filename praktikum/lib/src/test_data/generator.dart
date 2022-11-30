@@ -49,11 +49,6 @@ class SensorData {
         result =
             '{"name": "$name", "timestamp": "${DateTime.now()}", "values":$values}';
         break;
-      case 'Random Numbers':
-        randomNumbers();
-        result =
-            '{"name": "$name", "timestamp": "${DateTime.now()}", "values":$values}';
-        break;
       default:
         result = "Fehler";
         break;

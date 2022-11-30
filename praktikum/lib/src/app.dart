@@ -28,7 +28,7 @@ class DatenkrakeAppState extends State<DatenkrakeApp>
     });
 
     // Log the brightness change
-    print('Brightness changed to: $brightness');
+    //print('Brightness changed to: $brightness');
 
     super.didChangePlatformBrightness();
   }
