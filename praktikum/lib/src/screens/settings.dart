@@ -42,14 +42,14 @@ class SettingsScreenState extends State<SettingsScreen> {
         subtitle: Slider(
             value: sensor.rate,
             min: 0,
-            max: 5,
+            max: 10,
             divisions: 100,
             onChanged: (value) {
               setState(() {
                 sensor.rate = value;
               });
             }),
-        trailing: Text(sensor.rate.toString()),
+        trailing: Text(sensor.rate.toStringAsFixed(1)),
         isThreeLine: true,
       );
 

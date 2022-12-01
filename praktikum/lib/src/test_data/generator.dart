@@ -22,8 +22,7 @@ class SensorData {
     required this.delay,
     required this.onDataChanged,
   }) {
-    Timer.periodic(Duration(milliseconds: (delay * 1000).toInt()),
-        (Timer timer) {
+    Timer.periodic(Duration(seconds: (1 / delay).toInt()), (Timer timer) {
       if (!isRunning) {
         timer.cancel();
       }

@@ -12,7 +12,14 @@ class _MapScreenState extends State<MapScreen> {
   late List<MapLatLng> polyline;
   late List<List<MapLatLng>> plannedRoutes;
   late List<List<MapLatLng>> walkedRoutes;
-  late MapZoomPanBehavior _zoomPanBehavior;
+  late _CustomZoomPanBehavior _zoomPanBehavior;
+  late MapTileLayerController _controller;
+
+  bool isChecked = false;
+
+  List<String> items = ['item1', 'item2', 'item3'];
+  String? selectedItem = 'item2';
+
   @override
   void initState() {
     polyline = <MapLatLng>[
@@ -35,9 +42,9 @@ class _MapScreenState extends State<MapScreen> {
 
     plannedRoutes = <List<MapLatLng>>[polyline];
     walkedRoutes = <List<MapLatLng>>[];
-    _zoomPanBehavior = MapZoomPanBehavior(
-      maxZoomLevel: 20,
-    );
+    _controller = MapTileLayerController();
+    _zoomPanBehavior = _CustomZoomPanBehavior()..onTap = setMarker;
+    _zoomPanBehavior.maxZoomLevel = 20;
     super.initState();
   }
 
@@ -49,6 +56,16 @@ class _MapScreenState extends State<MapScreen> {
         layers: [
           MapTileLayer(
             urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+            //initialMarkersCount: 3,
+            /*markerBuilder: (BuildContext context, int index) {
+              return MapMarker(
+                latitude: plannedRoutes.first[index].latitude,
+                longitude: plannedRoutes.first[index].longitude,
+                iconColor: Colors.blue,
+                iconType: MapIconType.diamond,
+              );
+            },*/
+            controller: _controller,
             sublayers: [
               MapPolylineLayer(
                 polylines: List<MapPolyline>.generate(
@@ -86,7 +103,15 @@ class _MapScreenState extends State<MapScreen> {
             child: Align(
               alignment: Alignment.bottomLeft,
               child: FloatingActionButton(
-                onPressed: () {},
+                onPressed: () {
+                  List<MapLatLng> tmpPoly = [];
+                  if (isChecked) {
+                    plannedRoutes.add(tmpPoly);
+                  } else {
+                    walkedRoutes.add(tmpPoly);
+                  }
+                  setState(() {});
+                },
                 child: const Icon(Icons.linear_scale),
               ),
             ),
@@ -95,12 +120,25 @@ class _MapScreenState extends State<MapScreen> {
               alignment: Alignment.bottomRight,
               child: FloatingActionButton(
                 onPressed: () {
-                  setState(() {
-                    gps();
-                  });
+                  //setState(() {
+                  gps();
+                  //});
                 },
                 child: const Icon(Icons.location_on),
               )),
+          Padding(
+            padding: EdgeInsets.only(left: 31, top: 32),
+            child: Align(
+                alignment: Alignment.topLeft,
+                child: Checkbox(
+                  value: isChecked,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      isChecked = value!;
+                    });
+                  },
+                )),
+          )
         ],
       ),
     ));
@@ -139,9 +177,32 @@ class _MapScreenState extends State<MapScreen> {
     }
     walkedRoutes.last.add(MapLatLng(pos.latitude, pos.longitude));
   }
+
+  void setMarker(Offset position) {
+    if (isChecked) {
+      MapLatLng tmpPos = _controller.pixelToLatLng(position);
+
+      plannedRoutes.last.add(tmpPos);
+    }
+  }
 }
 
 class PolylineModel {
   PolylineModel(this.points);
   final List<MapLatLng> points;
 }
+
+class _CustomZoomPanBehavior extends MapZoomPanBehavior {
+  _CustomZoomPanBehavior();
+  late MapTapCallback onTap;
+
+  @override
+  void handleEvent(PointerEvent event) {
+    if (event is PointerUpEvent) {
+      onTap(event.localPosition);
+    }
+    super.handleEvent(event);
+  }
+}
+
+typedef MapTapCallback = void Function(Offset position);
