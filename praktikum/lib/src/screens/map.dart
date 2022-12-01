@@ -2,13 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_maps/maps.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:async';
+import 'package:praktikum/src/sensor_data.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class MapScreen extends StatefulWidget {
+  const MapScreen({Key? key}) : super(key: key);
   @override
-  _MapScreenState createState() => _MapScreenState();
+  MapScreenState createState() => MapScreenState();
 }
 
-class _MapScreenState extends State<MapScreen> {
+class MapScreenState extends State<MapScreen> {
   late List<MapLatLng> polyline;
   late List<List<MapLatLng>> plannedRoutes;
   late List<List<MapLatLng>> walkedRoutes;
@@ -176,13 +180,65 @@ class _MapScreenState extends State<MapScreen> {
       walkedRoutes.add(tmpPoly);
     }
     walkedRoutes.last.add(MapLatLng(pos.latitude, pos.longitude));
+
+    // Create sensor_data object for lat and long
+    SensorData lat = SensorData(
+        pos.latitude, DateTime.now(), const SensorMetadata("latitude_walked"));
+    SensorData lng = SensorData(pos.longitude, DateTime.now(),
+        const SensorMetadata("longitude_walked"));
+
+    // Create array of sensor_data objects
+    List<SensorData> sensorData = [lat, lng];
+
+    // Create json string from sensor_data objects
+    String json = jsonEncode(sensorData);
+
+    // POST sensor_data to server as JSON
+    await http.post(Uri.parse("https://lm.jan-krueger.eu/data"), body: json);
   }
 
-  void setMarker(Offset position) {
+  setMarker(Offset position) async {
     if (isChecked) {
       MapLatLng tmpPos = _controller.pixelToLatLng(position);
 
       plannedRoutes.last.add(tmpPos);
+
+      // Create sensor_data object for lat and long
+      SensorData lat = SensorData(tmpPos.latitude, DateTime.now(),
+          const SensorMetadata("latitude_planned"));
+      SensorData lng = SensorData(tmpPos.longitude, DateTime.now(),
+          const SensorMetadata("longitude_planned"));
+
+      // Create array of sensor_data objects
+      List<SensorData> sensorData = [lat, lng];
+
+      // Create json string from sensor_data objects
+      String json = jsonEncode(sensorData);
+
+      // POST sensor_data to server as JSON
+      await http.post(Uri.parse("https://lm.jan-krueger.eu/data"), body: json);
+    }
+  }
+
+  void updateData(String out) {
+    //print(out);
+    final parsedData = jsonDecode(out);
+    var tagObjsJson = (parsedData['values'] ?? []) as List;
+    List<Tag> tagObjs =
+        tagObjsJson.map((tagJson) => Tag.fromJson(tagJson)).toList();
+    //print(tagObjs);
+
+    if (parsedData['name'] == 'GPS') {
+      //pos.latitude = parsedData['values']['lat'];
+      //pos.longitude = parsedData['values']['long'];
+      MapLatLng pos = MapLatLng(
+          double.parse(tagObjs[0].value), double.parse(tagObjs[1].value));
+
+      if (walkedRoutes.isEmpty) {
+        List<MapLatLng> tmpPoly = [];
+        walkedRoutes.add(tmpPoly);
+      }
+      walkedRoutes.last.add(pos);
     }
   }
 }
@@ -206,3 +262,20 @@ class _CustomZoomPanBehavior extends MapZoomPanBehavior {
 }
 
 typedef MapTapCallback = void Function(Offset position);
+
+class Tag {
+  String name;
+  String value;
+
+  Tag(this.name, this.value);
+
+  factory Tag.fromJson(dynamic json) {
+    return Tag(json['name'] as String, json['value'] as String);
+  }
+
+  @override
+  String toString() {
+    // ignore: unnecessary_brace_in_string_interps
+    return ' $name: $value ';
+  }
+}

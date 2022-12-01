@@ -11,6 +11,7 @@ import '../screens/map.dart';
 
 final GlobalKey<ListScreenState> listKey = GlobalKey();
 final GlobalKey<ChartsScreenState> chartKey = GlobalKey();
+final GlobalKey<MapScreenState> mapKey = GlobalKey();
 
 class TabbarScreen extends StatelessWidget {
   /*ListScreen listScreen = ListScreen(key: listKey);
@@ -56,6 +57,7 @@ class TabbarScreen extends StatelessWidget {
             return SettingsScreen(onDataSend: (String out) {
               listKey.currentState!.updateData(out);
               chartKey.currentState!.updateData(out);
+              mapKey.currentState!.updateData(out);
             });
           /*case 2:
             return DataScreen();*/
@@ -66,7 +68,7 @@ class TabbarScreen extends StatelessWidget {
             return ListScreen(key: listKey);
           //return listScreen;
           case 4:
-            return MapScreen();
+            return MapScreen(key: mapKey);
           default:
             return const HomeScreen();
         }
