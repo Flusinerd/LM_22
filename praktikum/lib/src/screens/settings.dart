@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import '../model/sensor_setting.dart';
 import '../test_data/generator.dart';
+import './data.dart';
 
 class SettingsScreen extends StatefulWidget {
   final Function onDataSend;
   const SettingsScreen({super.key, required this.onDataSend});
+
   @override
   SettingsScreenState createState() =>
       SettingsScreenState(onDataSend: (String out) {
@@ -96,6 +98,8 @@ class SettingsScreenState extends State<SettingsScreen> {
         },
       );
 
+  var currentSliderValue = 5.0;
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -105,6 +109,18 @@ class SettingsScreenState extends State<SettingsScreen> {
             buildToggleCheckbox(showAll),
             const Divider(),
             ...sensors.map(buildSingleCheckbox).toList(),
+            Text('Accuracy', textAlign: TextAlign.center),
+            Slider(
+              value: currentSliderValue,
+              max: 5,
+              divisions: 5,
+              label: currentSliderValue.round().toString(),
+              onChanged: (double value) {
+                setState(() {
+                  currentSliderValue = value;
+                });
+              },
+            )
           ],
         ),
         floatingActionButton: FloatingActionButton(

@@ -2,8 +2,12 @@ import 'dart:ffi';
 
 import 'dart:async';
 import 'dart:math' as math;
+import 'package:flutter/cupertino.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:geolocator/geolocator.dart';
+import '../screens/settings.dart';
+
+final GlobalKey<SettingsScreenState> settingsKey = GlobalKey();
 
 class SensorData {
   String name;
@@ -86,6 +90,10 @@ class SensorData {
     });
   }
 
+  var accuracyVal = SettingsScreenState(onDataSend: (String out) {
+    settingsKey.currentState!;
+  }).currentSliderValue;
+
   gps() async {
     //check and request permissions, error prevention
     bool serviceEnabled;
@@ -110,8 +118,31 @@ class SensorData {
 
     // once here, permissions are as needed, so locaction is set
 
-    pos = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+    if (accuracyVal == 0.0) {
+      pos = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.lowest);
+    } else if (accuracyVal == 1.0) {
+      pos = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.low);
+    } else if (accuracyVal == 2.0) {
+      pos = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.medium);
+    } else if (accuracyVal == 3.0) {
+      pos = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+    } else if (accuracyVal == 4.0) {
+      pos = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.best);
+    } else if (accuracyVal == 5.0) {
+      pos = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.bestForNavigation);
+    } else {
+      print("Accuracy error, using medium setting");
+      pos = pos = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.medium);
+    }
+
+    //print(accuracyVal);
 
     values[0] = {'"name"': '"lat"', '"value"': '"${pos.latitude.toString()}"'};
     values[1] = {

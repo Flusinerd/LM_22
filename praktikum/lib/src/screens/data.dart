@@ -3,7 +3,10 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:praktikum/src/sensor_data.dart';
+import '../screens/settings.dart';
 import 'package:http/http.dart' as http;
+
+final GlobalKey<SettingsScreenState> settingsKey = GlobalKey();
 
 class DataScreen extends StatefulWidget {
   @override
@@ -68,6 +71,12 @@ class _DataScreenState extends State<DataScreen> {
     }
 
     // once here, permissions are as needed, so locaction is set
+
+    var accuracy = SettingsScreenState(onDataSend: (String out) {
+      settingsKey.currentState!;
+    }).currentSliderValue;
+
+    print(accuracy);
 
     pos = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
