@@ -181,20 +181,7 @@ class MapScreenState extends State<MapScreen> {
     }
     walkedRoutes.last.add(MapLatLng(pos.latitude, pos.longitude));
 
-    // Create sensor_data object for lat and long
-    SensorData lat = SensorData(
-        pos.latitude, DateTime.now(), const SensorMetadata("latitude_walked"));
-    SensorData lng = SensorData(pos.longitude, DateTime.now(),
-        const SensorMetadata("longitude_walked"));
-
-    // Create array of sensor_data objects
-    List<SensorData> sensorData = [lat, lng];
-
-    // Create json string from sensor_data objects
-    String json = jsonEncode(sensorData);
-
-    // POST sensor_data to server as JSON
-    await http.post(Uri.parse("https://lm.jan-krueger.eu/data"), body: json);
+    saveData(pos.latitude, pos.longitude, 'walked');
   }
 
   setMarker(Offset position) async {
@@ -203,20 +190,7 @@ class MapScreenState extends State<MapScreen> {
 
       plannedRoutes.last.add(tmpPos);
 
-      // Create sensor_data object for lat and long
-      SensorData lat = SensorData(tmpPos.latitude, DateTime.now(),
-          const SensorMetadata("latitude_planned"));
-      SensorData lng = SensorData(tmpPos.longitude, DateTime.now(),
-          const SensorMetadata("longitude_planned"));
-
-      // Create array of sensor_data objects
-      List<SensorData> sensorData = [lat, lng];
-
-      // Create json string from sensor_data objects
-      String json = jsonEncode(sensorData);
-
-      // POST sensor_data to server as JSON
-      await http.post(Uri.parse("https://lm.jan-krueger.eu/data"), body: json);
+      saveData(tmpPos.latitude, tmpPos.longitude, 'planned');
     }
   }
 
@@ -228,7 +202,7 @@ class MapScreenState extends State<MapScreen> {
         tagObjsJson.map((tagJson) => Tag.fromJson(tagJson)).toList();
     //print(tagObjs);
 
-    if (parsedData['name'] == 'GPS') {
+    if (parsedData['name'] == 'GPS' && tagObjs[0].value != 'value') {
       //pos.latitude = parsedData['values']['lat'];
       //pos.longitude = parsedData['values']['long'];
       MapLatLng pos = MapLatLng(
@@ -239,7 +213,26 @@ class MapScreenState extends State<MapScreen> {
         walkedRoutes.add(tmpPoly);
       }
       walkedRoutes.last.add(pos);
+
+      saveData(pos.latitude, pos.longitude, 'tracked');
     }
+  }
+
+  saveData(in_lat, in_long, String type) async {
+    // Create sensor_data object for lat and long
+    SensorData lat =
+        SensorData(in_lat, DateTime.now(), SensorMetadata("latitude_" + type));
+    SensorData lng = SensorData(
+        in_long, DateTime.now(), SensorMetadata("longitude_" + type));
+
+    // Create array of sensor_data objects
+    List<SensorData> sensorData = [lat, lng];
+
+    // Create json string from sensor_data objects
+    String json = jsonEncode(sensorData);
+
+    // POST sensor_data to server as JSON
+    await http.post(Uri.parse("https://lm.jan-krueger.eu/data"), body: json);
   }
 }
 
