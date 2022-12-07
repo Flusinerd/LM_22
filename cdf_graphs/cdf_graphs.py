@@ -1,7 +1,7 @@
 import pandas
 
 # planned routes
-planned = pandas.read_csv('planned.csv')
+planned = pandas.read_csv('cdf_graphs\planned.csv')
 
 planned_1 = [
     [51.44695323318842, 7.267433539214133], 
@@ -18,10 +18,10 @@ for i in range(3, 13):
     planned_2.append([planned.at[i, 'lat'], planned.at[i, 'long']])
 
 # continuous tracking
-tracked = pandas.read_csv('tracked.csv')
+tracked = pandas.read_csv('cdf_graphs/tracked.csv')
 
 # manual points
-walked = pandas.read_csv('walked.csv')
+walked = pandas.read_csv('cdf_graphs\walked.csv')
 
 walked_11 = []
 for i in range(6):
@@ -77,3 +77,10 @@ tracked_23 = []
 for i in range(1301):
     if((tracked.at[i, 'timestamp'] >= walked.at[34, 'timestamp']) & (tracked.at[i, 'timestamp'] <= walked.at[42, 'timestamp'])):
         tracked_12.append([tracked.at[i, 'lat'], tracked.at[i, 'long']])
+
+print(tracked_13[0][0])
+
+def interpolation(posA, posB, t1, t2):
+    coordinates = []
+    diffLat = posB[0]-posA[0]
+    diffLong = posB[1]-posA[1]
