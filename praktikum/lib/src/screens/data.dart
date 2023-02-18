@@ -72,9 +72,7 @@ class _DataScreenState extends State<DataScreen> {
 
     // once here, permissions are as needed, so locaction is set
 
-    var accuracy = SettingsScreenState(onDataSend: (String out) {
-      settingsKey.currentState!;
-    }).currentSliderValue;
+    var accuracy = SettingsScreenState();
 
     print(accuracy);
 

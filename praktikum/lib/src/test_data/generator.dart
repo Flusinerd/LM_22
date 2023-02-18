@@ -90,9 +90,7 @@ class SensorData {
     });
   }
 
-  var accuracyVal = SettingsScreenState(onDataSend: (String out) {
-    settingsKey.currentState!;
-  }).currentSliderValue;
+  var accuracyVal = SettingsScreenState();
 
   gps() async {
     //check and request permissions, error prevention

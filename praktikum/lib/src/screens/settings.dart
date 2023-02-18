@@ -1,158 +1,152 @@
-import 'package:flutter/material.dart';
-import '../model/sensor_setting.dart';
-import '../test_data/generator.dart';
-import './data.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:praktikum/src/location_service.dart';
+import 'package:praktikum/src/model/setting.dart';
 
 class SettingsScreen extends StatefulWidget {
   final Function onDataSend;
   const SettingsScreen({super.key, required this.onDataSend});
 
   @override
-  SettingsScreenState createState() =>
-      SettingsScreenState(onDataSend: (String out) {
-        onDataSend(out);
-      });
+  SettingsScreenState createState() => SettingsScreenState();
 }
 
 class SettingsScreenState extends State<SettingsScreen> {
   final dataGenerators = [];
-  var icon = const Icon(Icons.play_circle);
+  var icon = const Icon(CupertinoIcons.play_circle);
 
-  final Function(String) onDataSend;
+  final modes = LocationService().modes;
 
-  final showAll = SensorSetting(title: 'Show all Sensors');
-  final sensors = [
-    SensorSetting(title: 'Accelerometer'),
-    SensorSetting(title: 'Gyroscope'),
-    SensorSetting(title: 'GPS'),
-    SensorSetting(title: 'Random Numbers'),
-  ];
+  void _showDialog(Widget child) {
+    showCupertinoModalPopup<void>(
+        context: context,
+        builder: (BuildContext context) => Container(
+              height: 216,
+              padding: const EdgeInsets.only(top: 6.0),
+              // The Bottom margin is provided to align the popup above the system navigation bar.
+              margin: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              // Provide a background color for the popup.
+              color: CupertinoColors.systemBackground.resolveFrom(context),
+              // Use a SafeArea widget to avoid system overlaps.
+              child: SafeArea(
+                top: false,
+                child: child,
+              ),
+            ));
+  }
 
-  SettingsScreenState({required this.onDataSend});
+  final settings = LocationService().settings;
 
-  Widget buildCheckbox({
-    required SensorSetting sensor,
-    required VoidCallback onClicked,
-  }) =>
-      ListTile(
-        onTap: onClicked,
-        leading: Checkbox(
-          value: sensor.value,
-          onChanged: (value) => onClicked(),
-        ),
-        title: Text(sensor.title),
-        subtitle: Slider(
-            value: sensor.rate,
-            min: 0,
-            max: 10,
-            divisions: 100,
-            onChanged: (value) {
-              setState(() {
-                sensor.rate = value;
-              });
-            }),
-        trailing: Text(sensor.rate.toStringAsFixed(1)),
-        isThreeLine: true,
-      );
-
-  Widget buildToggleCheckbox1({
-    required SensorSetting sensor,
-    required VoidCallback onClicked,
-  }) =>
-      ListTile(
-        onTap: onClicked,
-        leading: Checkbox(
-          value: sensor.value,
-          onChanged: (value) => onClicked(),
-        ),
-        title: Text(sensor.title),
-      );
-
-  Widget buildSingleCheckbox(SensorSetting sensor) => buildCheckbox(
-        sensor: sensor,
-        onClicked: () {
-          setState(() {
-            final newValue = !sensor.value;
-            sensor.value = newValue;
-
-            if (!newValue) {
-              showAll.value = false;
-            } else {
-              final all = sensors.every((sensor) => sensor.value);
-              showAll.value = all;
-            }
-          });
-        },
-      );
-
-  Widget buildToggleCheckbox(SensorSetting sensor) => buildToggleCheckbox1(
-        sensor: sensor,
-        onClicked: () {
-          final newValue = !sensor.value;
-          setState(() {
-            showAll.value = newValue;
-            for (var sensor in sensors) {
-              sensor.value = newValue;
-            }
-          });
-        },
-      );
-
-  var currentSliderValue = 5.0;
+  SettingsScreenState();
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-        body: ListView(
-          children: [
-            buildToggleCheckbox(showAll),
-            const Divider(),
-            ...sensors.map(buildSingleCheckbox).toList(),
-            Text('Accuracy', textAlign: TextAlign.center),
-            Slider(
-              value: currentSliderValue,
-              max: 5,
-              divisions: 5,
-              label: currentSliderValue.round().toString(),
-              onChanged: (double value) {
-                setState(() {
-                  currentSliderValue = value;
-                });
-              },
-            )
-          ],
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            if (!(dataGenerators.isNotEmpty)) {
-              setState(() {
-                for (var sensor in sensors) {
-                  if (sensor.value) {
-                    SensorData test = SensorData(
-                      name: sensor.title,
-                      delay: sensor.rate,
-                      onDataChanged: (String out) {
-                        onDataSend(out);
-                      },
-                    );
-                    dataGenerators.add(test);
-                    icon = const Icon(Icons.pause_circle);
-                  }
-                }
-              });
-            } else {
-              for (var dataGenerator in dataGenerators) {
-                dataGenerator.isRunning = !dataGenerator.isRunning;
-              }
-              dataGenerators.clear();
-              setState(() {
-                icon = const Icon(Icons.play_circle);
-              });
-            }
-          },
-          child: icon,
-        ),
+      child: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          // Build a slider for each setting
+          for (var setting in settings)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("${setting.name}: ${setting.value} ${setting.unit}"),
+                CupertinoSlider(
+                  value: setting.value.toDouble(),
+                  min: setting.minValue,
+                  max: setting.maxValue,
+                  divisions: (setting.maxValue - setting.minValue).round(),
+                  onChanged: (double value) {
+                    setState(() {
+                      setting.value = value.round();
+                    });
+                  },
+                ),
+              ],
+            ),
+          // Insert a spacer
+          Container(
+            height: 20,
+            decoration: const BoxDecoration(
+              border: Border(
+                bottom:
+                    BorderSide(width: 1.0, color: CupertinoColors.systemGrey),
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          // Build a select to select the mode
+          Row(children: [
+            const Text("Modus: "),
+            CupertinoButton(
+              child: Text(LocationService().getMode()),
+              onPressed: () => _showDialog(
+                CupertinoPicker(
+                  itemExtent: 32,
+                  onSelectedItemChanged: ((value) => {
+                        LocationService().setMode(modes[value]),
+                      }),
+                  children: [for (var mode in modes) Center(child: Text(mode))],
+                ),
+              ),
+            ),
+          ]),
+          Container(
+            height: 20,
+            decoration: const BoxDecoration(
+              border: Border(
+                bottom:
+                    BorderSide(width: 1.0, color: CupertinoColors.systemGrey),
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text("Stillstandserkennung"),
+              CupertinoSwitch(
+                value: LocationService().standStillDetectionEnabled,
+                onChanged: (bool value) {
+                  setState(() {
+                    LocationService().standStillDetectionEnabled = value;
+                  });
+                },
+              ),
+            ],
+          ),
+          Container(
+            height: 20,
+            decoration: const BoxDecoration(
+              border: Border(
+                bottom:
+                    BorderSide(width: 1.0, color: CupertinoColors.systemGrey),
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text("Daten Sammeln"),
+              CupertinoButton(
+                child: icon,
+                onPressed: () {
+                  setState(() {
+                    if (LocationService().isRunning) {
+                      icon = const Icon(CupertinoIcons.play_circle);
+                      LocationService().isRunning = false;
+                    } else {
+                      icon = const Icon(CupertinoIcons.stop_circle);
+                      LocationService().isRunning = true;
+                    }
+                  });
+                },
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
